@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2013, Sony Mobile Communications AB.
- * Copyright (c) 2013-2021, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2021 XiaoMi, Inc.
+ * Copyright (c) 2013-2019, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -40,6 +41,7 @@
 #include "../pinconf.h"
 #include "pinctrl-msm.h"
 #include "../pinctrl-utils.h"
+#include <linux/wakeup_reason.h> /*Add-HMI_M516_A01-51*/
 #include <linux/suspend.h>
 #ifdef CONFIG_HIBERNATION
 #include <linux/notifier.h>
@@ -630,8 +632,7 @@ static void msm_gpio_dbg_show(struct seq_file *s, struct gpio_chip *chip)
 **Date:2019-4-22
 **Comment:remove tz gpio
 */
-		if (i != 30 && i != 31 && i != 32 && i != 33 &&
-		    i != 0 && i != 1 && i != 2 && i != 3) {
+		if ( i!=30 && i!=31 && i!=32 && i!=33 && i!=0 && i!=1 && i!=2 && i!=3 ) {
 			msm_gpio_dbg_show_one(s, NULL, chip, i, gpio);
 			seq_puts(s, "\n");
 		}
