@@ -2,7 +2,7 @@
  * drivers/base/power/wakeup.c - System wakeup events framework
  *
  * Copyright (c) 2010 Rafael J. Wysocki <rjw@sisk.pl>, Novell Inc.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This file is released under the GPLv2.
  */
@@ -27,11 +27,6 @@
 #include "power.h"
 
 #include <linux/wakeup_reason.h> /*Add-HMI_M516_A01-51*/
-
-#ifndef CONFIG_SUSPEND
-suspend_state_t pm_suspend_target_state;
-#define pm_suspend_target_state	(PM_SUSPEND_ON)
-#endif
 
 /*
  * If set, the suspend/hibernate code will abort transitions to a sleep state
@@ -1140,7 +1135,6 @@ static int print_wakeup_source_stats(struct seq_file *m,
 	return 0;
 }
 
-
 static void *wakeup_sources_stats_seq_start(struct seq_file *m, loff_t *pos)
 {
 	struct wakeup_source *ws;
@@ -1162,7 +1156,8 @@ static void *wakeup_sources_stats_seq_start(struct seq_file *m, loff_t *pos)
 	return NULL;
 }
 
-static void *wakeup_sources_stats_seq_next(struct seq_file *m, void *v, loff_t *pos)
+static void *wakeup_sources_stats_seq_next(struct seq_file *m,
+					void *v, loff_t *pos)
 {
 	struct wakeup_source *ws = v;
 	struct wakeup_source *next_ws = NULL;
@@ -1185,7 +1180,7 @@ static void wakeup_sources_stats_seq_stop(struct seq_file *m, void *v)
 }
 
 /**
- * wakeup_sources_stats_show - Print wakeup sources statistics information.
+ * wakeup_sources_stats_seq_show - Print wakeup sources statistics information.
  * @m: seq_file to print the statistics into.
  * @v: wakeup_source of each iteration
  */
@@ -1194,8 +1189,6 @@ static int wakeup_sources_stats_seq_show(struct seq_file *m, void *v)
 	struct wakeup_source *ws = v;
 
 	print_wakeup_source_stats(m, ws);
-
-	print_wakeup_source_stats(m, &deleted_ws);
 
 	return 0;
 }
@@ -1206,7 +1199,6 @@ static const struct seq_operations wakeup_sources_stats_seq_ops = {
 	.stop  = wakeup_sources_stats_seq_stop,
 	.show  = wakeup_sources_stats_seq_show,
 };
-
 
 static int wakeup_sources_stats_open(struct inode *inode, struct file *file)
 {
