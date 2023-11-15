@@ -1,5 +1,5 @@
-/* Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+/* Copyright (c) 2012-2019, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -548,14 +548,14 @@ static DEVICE_ATTR_RW(debounce_us);
 static struct qpnp_pon_config *
 qpnp_get_cfg(struct qpnp_pon *pon, u32 pon_type)
 {
-	int i;
+       int i;
 
-	for (i = 0; i < pon->num_pon_config; i++) {
-		if (pon_type == pon->pon_cfg[i].pon_type)
-			return  &pon->pon_cfg[i];
-	}
+       for (i = 0; i < pon->num_pon_config; i++) {
+               if (pon_type == pon->pon_cfg[i].pon_type)
+                       return  &pon->pon_cfg[i];
+       }
 
-	return NULL;
+       return NULL;
 }
 
 #define PON_TWM_ENTRY_PBS_BIT           BIT(0)
@@ -2557,6 +2557,12 @@ static int qpnp_pon_probe(struct platform_device *pdev)
 	if (rc) {
 		dev_err(dev, "sysfs debounce file creation failed, rc=%d\n",
 			rc);
+		return rc;
+	}
+	
+	rc = device_create_file(&pdev->dev, &dev_attr_kpdpwr_reset);
+	if (rc) {
+		dev_err(&pdev->dev, "sys file creation failed rc: %d\n", rc);
 		return rc;
 	}
 
