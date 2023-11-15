@@ -1,5 +1,5 @@
 /* Copyright (c) 2017-2019 The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -20,6 +20,8 @@
 #include <linux/slab.h>
 #include <linux/pmic-voter.h>
 #include "step-chg-jeita.h"
+#undef pr_debug
+#define pr_debug pr_err
 
 #define STEP_CHG_VOTER		"STEP_CHG_VOTER"
 #define JEITA_VOTER		"JEITA_VOTER"
@@ -425,7 +427,7 @@ static int get_val(struct range_data *range, int hysteresis, int current_index,
 	* we treat it as 0 degree when the parameter threshold(battery temp) is below 0.
 	*/
 	if (threshold <= 0)
-		threshold = 0;
+			threshold = 0;
 
 	/*
 	 * If the threshold is lesser than the minimum allowed range,
@@ -734,12 +736,12 @@ static int handle_jeita(struct step_chg_info *chip)
 	}
 
 set_jeita_fv:
-	pr_info(" jeita vote fv_uv:%d last_vol:%d", fv_uv, chip->last_vol);
+	pr_info(" jeita vote fv_uv:%d last_vol:%d",fv_uv,chip->last_vol);
 	vote(chip->fv_votable, JEITA_VOTER, fv_uv ? true : false, fv_uv);
-	if (fv_uv == JEITA_GOOD_VOL && chip->last_vol == JEITA_WARM_VOL) {
+	if(fv_uv == JEITA_GOOD_VOL &&chip->last_vol == JEITA_WARM_VOL) {
 		rc = power_supply_set_property(chip->batt_psy,
 				POWER_SUPPLY_PROP_FORCE_RECHARGE, &pval);
-		if (rc < 0)
+		if(rc < 0)
 			pr_err("Can't force recharge from batt warm to good ,rc=%d\n", rc);
 	}
 chip->last_vol = fv_uv;

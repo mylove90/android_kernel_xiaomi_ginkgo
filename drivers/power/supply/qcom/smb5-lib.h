@@ -1,5 +1,5 @@
 /* Copyright (c) 2018-2020 The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -25,6 +25,7 @@
 #include <linux/usb/class-dual-role.h>
 #include "storm-watch.h"
 #include "battery.h"
+#define NS_QC3_CHG_WA
 
 #define NS_QC3_CHG_WA
 
@@ -840,7 +841,7 @@ int smblib_get_qc3_main_icl_offset(struct smb_charger *chg, int *offset_ua);
 int smblib_init(struct smb_charger *chg);
 int smblib_deinit(struct smb_charger *chg);
 int smblib_set_prop_battery_charging_enabled(struct smb_charger *chg,
-					     const union power_supply_propval *val);
+                const union power_supply_propval *val);
 int smblib_get_prop_battery_charging_enabled(struct smb_charger *chg,
-					     union power_supply_propval *val);
+                union power_supply_propval *val);
 #endif /* __SMB5_CHARGER_H */
