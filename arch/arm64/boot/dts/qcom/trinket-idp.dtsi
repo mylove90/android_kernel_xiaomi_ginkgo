@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -23,7 +23,6 @@
 	status = "ok";
 	#include "smb1355.dtsi"
 };
-
 &qupv3_se8_spi {
 	status = "ok";
 	device@1 {
@@ -35,7 +34,6 @@
 		spi-cpol;
 	};
 };
-
 &soc {
 	mtp_batterydata: qcom,battery-data {
 		qcom,batt-id-range-pct = <15>;
@@ -136,6 +134,26 @@
 	};
 };
 
+&qupv3_se3_i2c {
+	status = "ok";
+	nq@28 {
+		compatible = "qcom,nq-nci";
+		reg = <0x28>;
+		qcom,nq-irq = <&tlmm 85 0x00>;
+		qcom,nq-ven = <&tlmm 83 0x00>;
+		qcom,nq-firm = <&tlmm 84 0x00>;
+		qcom,nq-clkreq = <&tlmm 95 0x00>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <85 0>;
+		interrupt-names = "nfc_irq";
+		pinctrl-names = "nfc_active", "nfc_suspend";
+		pinctrl-0 = <&nfc_int_active &nfc_enable_active
+				&nfc_clk_req_active>;
+		pinctrl-1 = <&nfc_int_suspend &nfc_enable_suspend
+				&nfc_clk_req_suspend>;
+	};
+};
+
 &sdhc_1 {
 	vdd-supply = <&pm6125_l24>;
 	qcom,vdd-voltage-level = <2950000 2950000>;
@@ -194,11 +212,11 @@
 	qcom,charger-temp-max = <800>;
 	qcom,smb-temp-max = <800>;
 	qcom,auto-recharge-soc = <99>;
-	qcom,flash-disable-soc = <10>;
+	qcom,flash-disable-soc = <0>;
 	qcom,hw-die-temp-mitigation;
 	qcom,float-option = <1>;
-	qcom,thermal-mitigation = <3000000 2500000 2200000 
-			2000000 1500000 1000000 800000 500000 200000>;
+	qcom,thermal-mitigation = <3000000 2500000 2000000
+			2000000 1500000 900000 800000 500000 100000>;
 };
 
 &usb0 {
@@ -263,12 +281,10 @@
 			gpio-key,wakeup;
 		};
 	};
-
 	simtray {
 		compatible = "xiaomi,simtray-status";
 		status-gpio = <&tlmm 98 0x00>;
 	};
-
 	goodix_fp {
 		compatible = "goodix,fingerprint";
 		interrupt-parent = <&tlmm>;
@@ -280,7 +296,6 @@
 		fp-gpio-reset = <&tlmm 93 0x00>;
 		status = "okay";
 	};
-
 	fpc1020 {
 		status = "ok";
 		compatible = "fpc,fpc1020";
@@ -300,10 +315,9 @@
 		pinctrl-1 = <&msm_gpio_93_output_high>;
 		pinctrl-2 = <&msm_gpio_92>;
 	};
-
 	ant_check {
 		compatible = "ant_check";
-		ant_check_gpio = <&tlmm 128 0x0>;
+	        ant_check_gpio = <&tlmm 128 0x0>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&ant_check_default>;
 	};
@@ -403,7 +417,6 @@
 	qcom,platform-reset-gpio = <&tlmm 90 0>;
 	qcom,platform-bklight-en-gpio = <&pmi632_gpios 6 0>;
 };
-
 &dsi_nt36672a_tianma_video {
 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
 	qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_dcs";
@@ -467,3 +480,4 @@
 	qcom,platform-reset-gpio = <&tlmm 90 0>;
 	qcom,platform-bklight-en-gpio = <&pmi632_gpios 6 0>;
 };
+
