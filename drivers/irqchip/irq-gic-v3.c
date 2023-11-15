@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2013-2017 ARM Limited, All Rights Reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  * Author: Marc Zyngier <marc.zyngier@arm.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,7 @@
 #include <linux/syscore_ops.h>
 #include <linux/suspend.h>
 #include <linux/notifier.h>
+#include <linux/wakeup_reason.h> /*Add-HMI_M516_A01-51*/
 
 #include <linux/wakeup_reason.h> /*Add-HMI_M516_A01-51*/
 
