@@ -20,12 +20,11 @@ struct simtray_data {
 };
 
 static ssize_t simtray_status_show(struct device *dev,
-				   struct device_attribute *attr, char *buf)
+		struct device_attribute *attr, char *buf)
 {
 	struct simtray_data *data = dev_get_drvdata(dev);
 
-	return scnprintf(buf, PAGE_SIZE, "%d\n",
-			 gpio_get_value(data->status_gpio));
+	return scnprintf(buf, PAGE_SIZE, "%d\n", gpio_get_value(data->status_gpio));
 }
 static DEVICE_ATTR(status, 0444, simtray_status_show, NULL);
 
@@ -65,9 +64,7 @@ static int simtray_remove(struct platform_device *pdev)
 }
 
 static const struct of_device_id simtray_of_match[] = {
-	{
-		.compatible = "xiaomi,simtray-status",
-	},
+	{ .compatible = "xiaomi,simtray-status", },
 	{},
 };
 
