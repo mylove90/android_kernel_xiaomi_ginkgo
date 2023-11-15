@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013-2015,2017, The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -41,7 +41,6 @@ static struct workqueue_struct *cpu_boost_wq;
 
 static struct work_struct input_boost_work;
 static struct work_struct powerkey_input_boost_work;
-
 static bool input_boost_enabled;
 
 static unsigned int input_boost_ms = 40;
@@ -74,7 +73,7 @@ static int set_input_boost_freq(const char *buf, const struct kernel_param *kp)
 	if (strnstr(kp->name, "input_boost_freq", MAX_NAME_LENGTH))
 		type = default_input_boost;
 	if (strnstr(kp->name, "powerkey_input_boost_freq",
-		    MAX_NAME_LENGTH))
+			MAX_NAME_LENGTH))
 		type = powerkey_input_boost;
 
 	while ((cp = strpbrk(cp + 1, " :")))
@@ -84,7 +83,7 @@ static int set_input_boost_freq(const char *buf, const struct kernel_param *kp)
 	if (!ntokens) {
 		if (sscanf(buf, "%u\n", &val) != 1)
 			return -EINVAL;
-		for_each_possible_cpu(i) {
+		for_each_possible_cpu(i){
 			if (type == default_input_boost)
 				per_cpu(sync_info, i).input_boost_freq = val;
 			else if (type == powerkey_input_boost)
@@ -114,8 +113,8 @@ static int set_input_boost_freq(const char *buf, const struct kernel_param *kp)
 
 check_enable:
 	for_each_possible_cpu(i) {
-		if (per_cpu(sync_info, i).input_boost_freq ||
-		    per_cpu(sync_info, i).powerkey_input_boost_freq) {
+		if (per_cpu(sync_info, i).input_boost_freq
+					|| per_cpu(sync_info, i).powerkey_input_boost_freq) {
 			enabled = true;
 			break;
 		}
@@ -156,7 +155,7 @@ static const struct kernel_param_ops param_ops_input_boost_freq = {
 };
 module_param_cb(input_boost_freq, &param_ops_input_boost_freq, NULL, 0644);
 module_param_cb(powerkey_input_boost_freq, &param_ops_input_boost_freq,
-		NULL, 0644);
+			NULL, 0644);
 
 /*
  * The CPUFREQ_ADJUST notifier is used to override the current policy min to
@@ -296,7 +295,7 @@ static void do_powerkey_input_boost(struct work_struct *work)
 	}
 
 	queue_delayed_work(cpu_boost_wq, &input_boost_rem,
-			   msecs_to_jiffies(powerkey_input_boost_ms));
+				msecs_to_jiffies(powerkey_input_boost_ms));
 }
 
 static void cpuboost_input_event(struct input_handle *handle,
@@ -313,12 +312,12 @@ static void cpuboost_input_event(struct input_handle *handle,
 
 	if (work_pending(&input_boost_work))
 		return;
-	
+
 	if (type == EV_KEY && code == KEY_POWER)
 		queue_work(cpu_boost_wq, &powerkey_input_boost_work);
 	else
 		queue_work(cpu_boost_wq, &input_boost_work);
-	
+
 	last_input_time = ktime_to_us(ktime_get());
 }
 
@@ -403,7 +402,7 @@ static int cpu_boost_init(void)
 		return -EFAULT;
 
 	INIT_WORK(&input_boost_work, do_input_boost);
-	INIT_WORK(&powerkey_input_boost_work, do_powerkey_input_boost);
+        INIT_WORK(&powerkey_input_boost_work, do_powerkey_input_boost);
 	INIT_DELAYED_WORK(&input_boost_rem, do_input_boost_rem);
 
 	for_each_possible_cpu(cpu) {
