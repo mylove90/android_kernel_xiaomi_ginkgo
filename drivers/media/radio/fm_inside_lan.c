@@ -15,6 +15,7 @@
 #include <linux/mdss_io_util.h>
 #include <sound/fm_lan.h>
 
+//#define wfj_debug printk("fm-inside-lan  %s:%d\n",__func__,__LINE__)
 struct vreg_config {
 	char *name;
 	unsigned long vmin;
@@ -25,7 +26,7 @@ struct vreg_config {
 struct fm_data {
 	struct device *dev;
 	struct mutex lock;
-	struct regulator *pwr_vdd; /* ldio21 2.7V */
+	struct regulator *pwr_vdd;  /* ldio21 2.7V */
 };
 static struct fm_data *fm;
 
@@ -33,25 +34,24 @@ static int32_t fm_get_regulator(bool get)
 {
 	int32_t ret = 0;
 
-	pr_err("%s: get/put regulator : %d\n", __func__, get);
-	if (!get)
+	pr_err("%s: get/put regulator : %d \n", __func__, get);
+	if (!get) {
 		goto put_regulator;
+	}
 
 	fm->pwr_vdd = regulator_get(fm->dev, "vdd_io");
 	if (IS_ERR_OR_NULL(fm->pwr_vdd)) {
 		ret = PTR_ERR(fm->pwr_vdd);
-		pr_err("%s: Failed to get vdd regulator", __func__);
+		pr_err("%s: Failed to get vdd regulator",__func__);
 		goto put_regulator;
 	} else {
-		if (regulator_count_voltages(fm->pwr_vdd) > 0) {
-			ret = regulator_set_voltage(fm->pwr_vdd, 2700000,
-						    2700000);
-			if (ret) {
-				pr_err("%s: vddio regulator set_vtg failed,ret=%d",
-				       __func__, ret);
-				goto put_regulator;
-			}
-		}
+        if (regulator_count_voltages(fm->pwr_vdd) > 0) {
+            ret = regulator_set_voltage(fm->pwr_vdd, 2700000, 2700000);
+            if (ret) {
+                pr_err("%s: vddio regulator set_vtg failed,ret=%d", __func__, ret);
+                goto put_regulator;
+            }
+        }
 	}
 
 	return 0;
@@ -70,20 +70,20 @@ static int32_t fm_enable_regulator(bool en)
 	int32_t ret = 0;
 
 	if (status == en) {
-		pr_err("%s: Already %s fm regulator", __func__,
-		       en ? "enable" : "disable");
+		pr_err("%s: Already %s fm regulator", __func__, en?"enable":"disable");
 		return 0;
 	}
 	status = en;
-	pr_err("%s: %s fm regulator", __func__, en ? "enable" : "disable");
+	pr_err("%s: %s fm regulator", __func__, en?"enable":"disable");
 
-	if (!en)
+	if (!en) {
 		goto disable_vdd_regulator;
+	}
 
 	if (fm->pwr_vdd) {
 		ret = regulator_enable(fm->pwr_vdd);
 		if (ret < 0) {
-			pr_err("%s: Failed to enable vdd regulator", __func__);
+			pr_err("%s: Failed to enable vdd regulator",__func__);
 			goto exit;
 		}
 	}
@@ -100,43 +100,41 @@ exit:
 
 void fm_lan_power_set(bool status)
 {
-	if (status) {
-		fm_enable_regulator(true);
+	if(status){
+   		fm_enable_regulator(true);
 		pr_err("%s: fm lan power enable\n", __func__);
-	} else {
-		fm_enable_regulator(false);
+   	}else{
+   		fm_enable_regulator(false);
 		pr_err("%s: fm lan power disable\n", __func__);
 	}
 
-	return;
-}
-EXPORT_SYMBOL(fm_lan_power_set);
+   return;
+}EXPORT_SYMBOL(fm_lan_power_set);
 
 static int fm_power_probe(struct platform_device *pdev)
 {
 	int ret = 0;
 
-	dev_err(&pdev->dev, "probe fm_inside_lan driver");
-	fm = kzalloc(sizeof(struct fm_data), GFP_KERNEL);
-	if (!fm) {
-		dev_err(&pdev->dev,
-			"failed to allocate memory for struct fm_data\n");
+    dev_err(&pdev->dev,"probe fm_inside_lan driver");
+	fm = kzalloc(sizeof(struct fm_data),GFP_KERNEL);
+    if (!fm) {
+		dev_err(&pdev->dev,"failed to allocate memory for struct fm_data\n");
 		ret = -ENOMEM;
 		goto free_pdata;
 	}
 
-	fm->dev = &pdev->dev;
-	platform_set_drvdata(pdev, fm);
+   fm->dev = &pdev->dev;
+   platform_set_drvdata(pdev, fm);
 
-	ret = fm_get_regulator(true);
+   ret = fm_get_regulator(true);
 	if (ret < 0) {
-		pr_err("%s: Failed to get register\n", __func__);
+		pr_err("%s: Failed to get register \n",__func__);
 		goto err_get_regulator;
 	}
 
 	ret = fm_enable_regulator(false);
-	if (ret < 0) {
-		pr_err("%s: Failed to enable regulator\n", __func__);
+	if(ret < 0){
+		pr_err("%s: Failed to enable regulator \n",__func__);
 		goto err_enable_regulator;
 	}
 
@@ -150,7 +148,7 @@ err_get_regulator:
 
 free_pdata:
 	kfree(fm);
-	return ret;
+    return ret;
 }
 
 static int fm_power_remove(struct platform_device *pdev)
@@ -169,9 +167,7 @@ static int fm_power_remove(struct platform_device *pdev)
 }
 
 static struct of_device_id fm_of_match[] = {
-	{
-		.compatible = "qcom,fm_inside_lan",
-	},
+	{ .compatible = "qcom,fm_inside_lan", },
 	{}
 };
 MODULE_DEVICE_TABLE(of, fm_of_match);
